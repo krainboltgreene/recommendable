@@ -11,12 +11,10 @@ module Recommendable
         # the same ways. A value of -1.0 indicates that both users have rated the
         # same items in opposite ways.
         #
-        # @param [Fixnum, String] user_id the ID of the first user
-        # @param [Fixnum, String] other_user_id the ID of another user
+        # @param [Fixnum, String] auser the ID of a user
+        # @param [Fixnum, String] buser the ID of another user
         # @return [Float] the numeric similarity between this user and the passed user
-        # @note Similarity values are asymmetrical. `Calculations.similarity_between(user_id, other_user_id)` will not necessarily equal `Calculations.similarity_between(other_user_id, user_id)`
-        def similarity_between(user_id, other_user_id)
-          UserSimilarity.new(user_id, other_user_id).calculate!
+        # @note Similarity values are asymmetrical. `Calculations.similarity_between(auser, buser)` will not necessarily equal `Calculations.similarity_between(buser, auser)`
         def similarity_between(auser, buser)
           UserSimilarity.new(auser, buser, Recommendable.config.ratable_classes).calculate!
         end
