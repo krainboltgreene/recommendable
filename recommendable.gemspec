@@ -1,4 +1,6 @@
-$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+# coding: utf-8
+lib = File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "recommendable/version"
 
 Gem::Specification.new do |spec|
