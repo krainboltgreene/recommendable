@@ -4,7 +4,7 @@ PATH
     recommendable (2.1.0.1)
       activesupport (~> 3.0)
       hooks (~> 0.2)
-      redis (~> 2.2)
+      redis (~> 3.0)
 
 GEM
   remote: https://rubygems.org/
@@ -131,7 +131,7 @@ GEM
     rake (10.0.3)
     rdoc (3.12.2)
       json (~> 1.4)
-    redis (2.2.2)
+    redis (3.0.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     simplecov (0.7.1)
