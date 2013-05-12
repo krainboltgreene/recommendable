@@ -43,23 +43,23 @@ module Recommendable
         end
 
         def disagreements
-          liked_difference + disliked_difference
+          liked_divergence + disliked_divergence
         end
 
         def liked_intersection
-          Recommendable.redis.sinter(a_liked_set, b_liked_set).size
+          VoteDifference.new(aliked, bliked).size
         end
 
         def disliked_intersection
-          Recommendable.redis.sinter(a_disliked_set, b_disliked_set).size
+          VoteDifference.new(adisliked, bdisliked).size
         end
 
-        def liked_difference
-          Recommendable.redis.sinter(a_liked_set, b_disliked_set).size
+        def liked_divergence
+          VoteDifference.new(aliked, bdisliked).size
         end
 
-        def disliked_difference
-          Recommendable.redis.sinter(a_disliked_set, b_liked_set).size
+        def disliked_divergence
+          VoteDifference.new(adisliked, bliked).size
         end
       end
     end
