@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.has_rdoc    = "yard"
 
   spec.authors     = ["David Celis"]
-  spec.email       = %w[david@davidcelispec.com]
+  spec.email       = %w[david@davidcelis.com]
   spec.homepage    = "https://davidcelis.github.com/recommendable"
 
   spec.add_dependency "activesupport", "~> 3.0"
