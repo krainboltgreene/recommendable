@@ -57,7 +57,7 @@ class CalculationsTest < MiniTest::Unit::TestCase
     assert_predict(-1.0, @user, @book9)
     assert_predict(-1.0, @user, @book10)
     assert_predict(-1.0, @user, @movie7)
-    assert_predict(1.0, @user, @movie8)
+    assert_predict(-1.0, @user, @movie8)
     assert_predict(1.0, @user, @movie10)
   end
 
