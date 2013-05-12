@@ -2,14 +2,14 @@ module Recommendable
   module Helpers
     module Calculations
       class Similarity
-        attr_accessor :a_liked_set, :a_disliked_set
-        attr_accessor :b_liked_set, :b_disliked_set
+        attr_accessor :aliked, :adisliked
+        attr_accessor :bliked, :bdisliked
 
         def initialize(klass, a, b)
-          self.a_liked_set = liked_set_for(klass, a)
-          self.a_disliked_set = disliked_set_for(klass, a)
-          self.b_liked_set = liked_set_for(klass, b)
-          self.b_disliked_set = disliked_set_for(klass, b)
+          self.aliked = liked_set_for(klass, a)
+          self.adisliked = disliked_set_for(klass, a)
+          self.bliked = liked_set_for(klass, b)
+          self.bdisliked = disliked_set_for(klass, b)
         end
 
         def calculate
@@ -31,11 +31,11 @@ module Recommendable
         end
 
         def liked_count
-          Recommendable.redis.scard(a_liked_set)
+          Recommendable.redis.scard(aliked)
         end
 
         def disliked_count
-          Recommendable.redis.scard(a_disliked_set)
+          Recommendable.redis.scard(adisliked)
         end
 
         def agreements
