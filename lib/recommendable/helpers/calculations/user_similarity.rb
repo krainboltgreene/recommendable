@@ -2,13 +2,13 @@ module Recommendable
   module Helpers
     module Calculations
       class UserSimilarity
-        attr_accessor :a, :b
+        attr_accessor :auser, :buser
         attr_accessor :similarities
 
-        def initialize(a, b)
-          self.a = a
-          self.b = b
-          self.similarities = ratable_classes.map(&method(:calculate))
+        def initialize(auser, buser, classes)
+          self.auser = auser
+          self.buser = buser
+          self.similarities = classes.map(&method(:calculate))
         end
 
         def calculate!
@@ -26,11 +26,7 @@ module Recommendable
         end
 
         def calculate(klass)
-          Similarity.new(klass, a, b)
-        end
-
-        def ratable_classes
-          Recommendable.config.ratable_classes
+          Similarity.new(klass, auser, buser)
         end
       end
     end
