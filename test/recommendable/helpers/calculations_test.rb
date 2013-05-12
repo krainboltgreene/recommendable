@@ -2,6 +2,7 @@ require "test_helper"
 
 class CalculationsTest < MiniTest::Unit::TestCase
   def setup
+    $debug = false
     @user = Factory(:user)
     5.times  { |x| instance_variable_set(:"@user#{x+1}",  Factory(:user))  }
     10.times { |x| instance_variable_set(:"@movie#{x+1}", Factory(:movie)) }
@@ -32,11 +33,12 @@ class CalculationsTest < MiniTest::Unit::TestCase
   end
 
   def test_similarity_between_calculates_correctly
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user1.id), 1.0
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user2.id), 0.25
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user3.id), 0
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user4.id), -0.25
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user5.id), -1.0
+    assert_similarity(1.0, @user, @user1)
+    $debug = true
+    assert_similarity(0.25, @user, @user2)
+    assert_similarity(0, @user, @user3)
+    assert_similarity(-0.25, @user, @user4)
+    assert_similarity(-1.0, @user, @user5)
   end
 
   def test_update_recommendations_ignores_rated_items
@@ -64,5 +66,15 @@ class CalculationsTest < MiniTest::Unit::TestCase
 
   def teardown
     Recommendable.redis.flushdb
+  end
+
+  def assert_similarity(value, a, b)
+    assert_calculation(:similarity_between, value, a, b)
+  end
+
+  def assert_calculation(method, value, *users)
+    expected = value
+    actual = Recommendable::Helpers::Calculations.send(method, *users.map(&:id))
+    assert_equal(expected, actual)
   end
 end
