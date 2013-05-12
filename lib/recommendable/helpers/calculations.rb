@@ -17,6 +17,8 @@ module Recommendable
         # @note Similarity values are asymmetrical. `Calculations.similarity_between(user_id, other_user_id)` will not necessarily equal `Calculations.similarity_between(other_user_id, user_id)`
         def similarity_between(user_id, other_user_id)
           UserSimilarity.new(user_id, other_user_id).calculate!
+        def similarity_between(auser, buser)
+          UserSimilarity.new(auser, buser, Recommendable.config.ratable_classes).calculate!
         end
 
         # Used internally to update the similarity values between this user and all
