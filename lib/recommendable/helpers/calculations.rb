@@ -1,3 +1,7 @@
+require "recommendable/helpers/calculations/similarity"
+require "recommendable/helpers/calculations/vote_difference"
+require "recommendable/helpers/calculations/user_similarity"
+
 module Recommendable
   module Helpers
     module Calculations
@@ -7,31 +11,12 @@ module Recommendable
         # the same ways. A value of -1.0 indicates that both users have rated the
         # same items in opposite ways.
         #
-        # @param [Fixnum, String] user_id the ID of the first user
-        # @param [Fixnum, String] other_user_id the ID of another user
+        # @param [Fixnum, String] auser the ID of a user
+        # @param [Fixnum, String] buser the ID of another user
         # @return [Float] the numeric similarity between this user and the passed user
-        # @note Similarity values are asymmetrical. `Calculations.similarity_between(user_id, other_user_id)` will not necessarily equal `Calculations.similarity_between(other_user_id, user_id)`
-        def similarity_between(user_id, other_user_id)
-          similarity = liked_count = disliked_count = 0
-          in_common = Recommendable.config.ratable_classes.each do |klass|
-            liked_set = Recommendable::Helpers::RedisKeyMapper.liked_set_for(klass, user_id)
-            other_liked_set = Recommendable::Helpers::RedisKeyMapper.liked_set_for(klass, other_user_id)
-            disliked_set = Recommendable::Helpers::RedisKeyMapper.disliked_set_for(klass, user_id)
-            other_disliked_set = Recommendable::Helpers::RedisKeyMapper.disliked_set_for(klass, other_user_id)
-
-            # Agreements
-            similarity += Recommendable.redis.sinter(liked_set, other_liked_set).size
-            similarity += Recommendable.redis.sinter(disliked_set, other_disliked_set).size
-
-            # Disagreements
-            similarity -= Recommendable.redis.sinter(liked_set, other_disliked_set).size
-            similarity -= Recommendable.redis.sinter(disliked_set, other_liked_set).size
-
-            liked_count += Recommendable.redis.scard(liked_set)
-            disliked_count += Recommendable.redis.scard(disliked_set)
-          end
-
-          similarity / (liked_count + disliked_count).to_f
+        # @note Similarity values are asymmetrical. `Calculations.similarity_between(auser, buser)` will not necessarily equal `Calculations.similarity_between(buser, auser)`
+        def similarity_between(auser, buser)
+          UserSimilarity.new(auser, buser, Recommendable.config.ratable_classes).calculate!
         end
 
         # Used internally to update the similarity values between this user and all

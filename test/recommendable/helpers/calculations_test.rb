@@ -2,6 +2,7 @@ require "test_helper"
 
 class CalculationsTest < MiniTest::Unit::TestCase
   def setup
+    $debug = false
     @user = Factory(:user)
     5.times  { |x| instance_variable_set(:"@user#{x+1}",  Factory(:user))  }
     10.times { |x| instance_variable_set(:"@movie#{x+1}", Factory(:movie)) }
@@ -32,11 +33,11 @@ class CalculationsTest < MiniTest::Unit::TestCase
   end
 
   def test_similarity_between_calculates_correctly
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user1.id), 1.0
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user2.id), 0.25
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user3.id), 0
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user4.id), -0.25
-    assert_equal Recommendable::Helpers::Calculations.similarity_between(@user.id, @user5.id), -1.0
+    assert_similarity(1.0, @user, @user1)
+    assert_similarity(0.25, @user, @user2)
+    assert_similarity(0, @user, @user3)
+    assert_similarity(-0.25, @user, @user4)
+    assert_similarity(-1.0, @user, @user5)
   end
 
   def test_update_recommendations_ignores_rated_items
@@ -52,17 +53,29 @@ class CalculationsTest < MiniTest::Unit::TestCase
 
   def test_predict_for_returns_predictions
     Recommendable::Helpers::Calculations.update_similarities_for(@user.id)
-    assert_equal Recommendable::Helpers::Calculations.predict_for(@user.id, @book7.class, @book7.id), 1.0
-    assert_equal Recommendable::Helpers::Calculations.predict_for(@user.id, @book8.class, @book8.id), 1.0
-    assert_equal Recommendable::Helpers::Calculations.predict_for(@user.id, @book9.class, @book9.id), -1.0
-    assert_equal Recommendable::Helpers::Calculations.predict_for(@user.id, @book10.class, @book10.id), -1.0
-    assert_equal Recommendable::Helpers::Calculations.predict_for(@user.id, @movie7.class, @movie7.id), -1.0
-    assert_equal Recommendable::Helpers::Calculations.predict_for(@user.id, @movie8.class, @movie8.id), -1.0
-    assert_equal Recommendable::Helpers::Calculations.predict_for(@user.id, @movie9.class, @movie9.id), 1.0
-    assert_equal Recommendable::Helpers::Calculations.predict_for(@user.id, @movie10.class, @movie10.id), 1.0
+    assert_predict(1.0, @user, @book7)
+    assert_predict(-1.0, @user, @book9)
+    assert_predict(-1.0, @user, @book10)
+    assert_predict(-1.0, @user, @movie7)
+    assert_predict(-1.0, @user, @movie8)
+    assert_predict(1.0, @user, @movie10)
   end
 
   def teardown
     Recommendable.redis.flushdb
+  end
+
+  def assert_predict(value, user, resource)
+    assert_calculation(:predict_for, value, user.id, resource.class, resource.id)
+  end
+
+  def assert_similarity(value, a, b)
+    assert_calculation(:similarity_between, value, a.id, b.id)
+  end
+
+  def assert_calculation(method, value, *arguments)
+    expected = value
+    actual = Recommendable::Helpers::Calculations.send(method, *arguments)
+    assert_equal(expected, actual)
   end
 end
