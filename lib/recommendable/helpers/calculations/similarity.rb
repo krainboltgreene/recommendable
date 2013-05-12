@@ -12,8 +12,12 @@ module Recommendable
           self.bdisliked = disliked_set_for(klass, b)
         end
 
-        def calculate
-          similarity / (liked_count + disliked_count).to_f
+        def score
+          agreements - disagreements
+        end
+
+        def count
+          liked_count + disliked_count
         end
 
         private
@@ -24,10 +28,6 @@ module Recommendable
 
         def disliked_set_for(klass, id)
           Recommendable::Helpers::RedisKeyMapper.disliked_set_for(klass, id)
-        end
-
-        def similarity
-          agreements - disagreements
         end
 
         def liked_count

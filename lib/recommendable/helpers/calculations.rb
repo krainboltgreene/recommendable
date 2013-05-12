@@ -1,4 +1,6 @@
-require 'recommendable/helpers/calculations/user_similarity'
+require "recommendable/helpers/calculations/similarity"
+require "recommendable/helpers/calculations/vote_difference"
+require "recommendable/helpers/calculations/user_similarity"
 
 module Recommendable
   module Helpers
@@ -14,7 +16,7 @@ module Recommendable
         # @return [Float] the numeric similarity between this user and the passed user
         # @note Similarity values are asymmetrical. `Calculations.similarity_between(user_id, other_user_id)` will not necessarily equal `Calculations.similarity_between(other_user_id, user_id)`
         def similarity_between(user_id, other_user_id)
-          UserSimilarity.new(user_id, other_user_id).similarity
+          UserSimilarity.new(user_id, other_user_id).calculate!
         end
 
         # Used internally to update the similarity values between this user and all
